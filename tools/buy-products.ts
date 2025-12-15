@@ -10,7 +10,7 @@ export const schema = {
 };
 
 export const metadata: ToolMetadata = {
-  name: "buy_products",
+  name: "buy-products",
   description:
     "Create a checkout page link for purchasing the selected products",
 };

@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useToolOutput } from "../../hooks/use-tool-output";
 import { useCallTool } from "../../hooks/use-call-tool";
+import { useSendMessage } from "../../hooks/use-send-message";
 
 type Product = {
   name: string;
@@ -11,6 +12,7 @@ type Product = {
 
 export default function ProductsPage() {
   const callTool = useCallTool();
+  const sendMessage = useSendMessage();
   const toolOutput = useToolOutput<{ products?: Product[] }>();
   console.log(toolOutput);
   const products = Array.isArray(toolOutput?.products)
@@ -35,6 +37,11 @@ export default function ProductsPage() {
     });
 
     console.log(result);
+
+    // Send structured content back to chat for visibility
+    await sendMessage(
+      `Checkout response: ${JSON.stringify(result?.structuredContent ?? null)}`
+    );
 
     setStatus(
       `Selected ${selectedIds.length} product${

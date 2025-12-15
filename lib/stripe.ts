@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import { getBaseUrl } from "./base-url";
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
@@ -15,6 +16,8 @@ export async function getCheckoutSession(items: CheckoutItem[]) {
     {}
   );
 
+  const url = getBaseUrl();
+
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
     line_items: Object.entries(quantityByPriceId).map(
@@ -23,8 +26,8 @@ export async function getCheckoutSession(items: CheckoutItem[]) {
         quantity,
       })
     ),
-    success_url: "https://example.com/checkout/success",
-    cancel_url: "https://example.com/checkout/cancel",
+    success_url: `${url}/success`,
+    cancel_url: `${url}/cancel`,
   });
 
   return session;

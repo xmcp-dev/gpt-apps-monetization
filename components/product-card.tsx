@@ -29,8 +29,8 @@ export function ProductCard({
   };
 
   return (
-    <div className="flex flex-col gap-3 rounded border border-gray-200 p-3">
-      <div className="aspect-video overflow-hidden rounded bg-gray-50">
+    <div className="flex flex-col gap-4 rounded border border-gray-200 p-4 sm:flex-row sm:items-center sm:gap-5">
+      <div className="aspect-video w-full max-w-48 overflow-hidden rounded bg-gray-50 sm:max-w-40">
         {product.image ? (
           <Image
             src={product.image}
@@ -46,20 +46,26 @@ export function ProductCard({
         )}
       </div>
       <div className="flex flex-1 flex-col gap-2">
-        <span className="font-medium">{product.name}</span>
+        <span className="text-base font-semibold text-gray-900">
+          {product.name}
+        </span>
+        <div className="flex items-center gap-3">
+          <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+            <span>Quantity</span>
+            <div className="inline-flex items-center rounded border border-gray-300 bg-white px-2 py-1 shadow-sm">
+              <input
+                type="number"
+                name={`quantity-${product.priceId}`}
+                min={0}
+                step={1}
+                value={quantity}
+                onChange={handleChange}
+                className="w-20 border-none bg-transparent text-right text-sm outline-none"
+              />
+            </div>
+          </label>
+        </div>
       </div>
-      <label className="flex items-center justify-between gap-3 text-sm font-medium">
-        <span>Quantity</span>
-        <input
-          type="number"
-          name={`quantity-${product.priceId}`}
-          min={0}
-          step={1}
-          value={quantity}
-          onChange={handleChange}
-          className="w-24 rounded border border-gray-200 px-2 py-1 text-right"
-        />
-      </label>
     </div>
   );
 }

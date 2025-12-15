@@ -13,15 +13,27 @@ export async function getCheckoutSession(priceId: string) {
   return session;
 }
 
-export async function getCheckoutSessionForProducts(priceIds: string[]) {
-  const uniquePriceIds = Array.from(new Set(priceIds));
+export type CheckoutItem = { priceId: string; quantity: number };
+
+export async function getCheckoutSessionForProducts(items: CheckoutItem[]) {
+  // Merge duplicate priceIds so Stripe receives a single line item per price.
+  const quantityByPriceId = items.reduce<Record<string, number>>(
+    (acc, { priceId, quantity }) => {
+      const safeQuantity = Math.max(1, Math.floor(quantity));
+      acc[priceId] = (acc[priceId] ?? 0) + safeQuantity;
+      return acc;
+    },
+    {}
+  );
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
-    line_items: uniquePriceIds.map((priceId) => ({
-      price: priceId,
-      quantity: 1,
-    })),
+    line_items: Object.entries(quantityByPriceId).map(
+      ([priceId, quantity]) => ({
+        price: priceId,
+        quantity,
+      })
+    ),
     success_url: "https://example.com/checkout/success",
     cancel_url: "https://example.com/checkout/cancel",
   });

@@ -1,12 +1,21 @@
-import { getCheckoutSessionForProducts } from "@/lib/stripe";
+import { CheckoutItem, getCheckoutSessionForProducts } from "@/lib/stripe";
 import { ToolMetadata, InferSchema } from "xmcp";
 import { z } from "zod";
 
 export const schema = {
-  priceIds: z
-    .array(z.string())
+  items: z
+    .array(
+      z.object({
+        priceId: z.string().describe("The Stripe price ID to purchase"),
+        quantity: z
+          .number()
+          .int()
+          .min(1)
+          .describe("How many units of this price to purchase"),
+      })
+    )
     .nonempty()
-    .describe("The IDs of the products to buy"),
+    .describe("The line items to include in checkout"),
 };
 
 export const metadata: ToolMetadata = {
@@ -21,11 +30,11 @@ export const metadata: ToolMetadata = {
   },
 };
 
-export default async function handler({
-  priceIds,
-}: InferSchema<typeof schema>) {
+export default async function handler({ items }: InferSchema<typeof schema>) {
   try {
-    const session = await getCheckoutSessionForProducts(priceIds);
+    const session = await getCheckoutSessionForProducts(
+      items as CheckoutItem[]
+    );
 
     return {
       content: [

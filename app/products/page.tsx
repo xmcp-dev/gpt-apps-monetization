@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
+import { ProductGrid } from "@/components/product-grid";
 import { useToolOutput } from "../../hooks/use-tool-output";
 import { useCallTool } from "../../hooks/use-call-tool";
 import { useOpenExternal } from "../../hooks/use-open-external";
@@ -8,32 +9,43 @@ import { useOpenExternal } from "../../hooks/use-open-external";
 type Product = {
   name: string;
   priceId: string;
+  image: string | null;
 };
+
+type CheckoutItem = { priceId: string; quantity: number };
 
 export default function ProductsPage() {
   const callTool = useCallTool();
   const openExternal = useOpenExternal();
   const toolOutput = useToolOutput<{ products?: Product[] }>();
-  const products = Array.isArray(toolOutput?.products)
-    ? toolOutput.products
-    : [];
+  const products = useMemo(
+    () => (Array.isArray(toolOutput?.products) ? toolOutput.products : []),
+    [toolOutput]
+  );
 
   const [status, setStatus] = useState<string | null>(null);
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+
+  const canCheckout = useMemo(
+    () => products.some((product) => (quantities[product.priceId] ?? 0) > 0),
+    [products, quantities]
+  );
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const selectedIds = formData.getAll("cart[]").map(String);
+    const items: CheckoutItem[] = Object.entries(quantities)
+      .map(([priceId, quantity]) => ({ priceId, quantity }))
+      .filter((item) => item.quantity > 0);
 
-    if (!selectedIds.length) {
-      setStatus("Select at least one product to continue.");
+    if (!items.length) {
+      setStatus("Set a quantity for at least one product to continue.");
       return;
     }
 
     try {
       const result = await callTool("buy-products", {
-        priceIds: selectedIds,
+        items,
       });
 
       const checkoutUrl =
@@ -60,33 +72,24 @@ export default function ProductsPage() {
       </header>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-3">
-          {products.length ? (
-            products.map((product) => (
-              <label
-                key={product.priceId}
-                className="flex items-center gap-3 rounded border border-gray-200 p-3"
-              >
-                <input
-                  type="checkbox"
-                  name="cart[]"
-                  value={product.priceId}
-                  className="size-4"
-                />
-                <span className="font-medium">{product.name}</span>
-              </label>
-            ))
-          ) : (
-            <p className="text-sm text-gray-500">
-              Waiting for products from the tool output…
-            </p>
-          )}
-        </div>
+        {products.length ? (
+          <ProductGrid
+            products={products}
+            quantities={quantities}
+            onQuantityChange={(priceId, quantity) =>
+              setQuantities((prev) => ({ ...prev, [priceId]: quantity }))
+            }
+          />
+        ) : (
+          <p className="text-sm text-gray-500">
+            Waiting for products from the tool output…
+          </p>
+        )}
 
         <button
           type="submit"
           className="inline-flex w-full items-center justify-center rounded bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-black/90 disabled:opacity-60"
-          disabled={!products.length}
+          disabled={!products.length || !canCheckout}
         >
           Buy
         </button>

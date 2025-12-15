@@ -1,12 +1,13 @@
 import { getCheckoutSession } from "@/lib/stripe";
 import { InferSchema } from "xmcp";
 import { z } from "zod";
+import { ToolMetadata } from "xmcp";
 
 export const schema = {
   priceIds: z.array(z.string()).describe("The IDs of the products to buy"),
 };
 
-export const metadata = {
+export const metadata: ToolMetadata = {
   name: "buy_product",
   description:
     "Create a checkout page link for purchasing the selected products",

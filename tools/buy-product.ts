@@ -11,10 +11,21 @@ export const metadata: ToolMetadata = {
   name: "buy_product",
   description:
     "Create a checkout page link for purchasing the selected products",
+  annotations: {
+    readOnlyHint: true,
+  },
+  _meta: {
+    openai: {
+      widgetAccessible: true,
+      resultCanProduceWidget: true,
+    },
+  },
 };
 
 export default async function handler({ priceId }: InferSchema<typeof schema>) {
   const session = await getCheckoutSession(priceId);
+
+  console.log(session);
 
   return {
     content: [

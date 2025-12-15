@@ -2,7 +2,8 @@
 
 import { FormEvent, useState } from "react";
 import { useToolOutput } from "../../hooks/use-tool-output";
-import { useSendMessage } from "../../hooks/use-send-message";
+import { useCallTool } from "../../hooks/use-call-tool";
+import { useOpenExternal } from "../../hooks/use-open-external";
 
 type Product = {
   name: string;
@@ -10,7 +11,8 @@ type Product = {
 };
 
 export default function ProductsPage() {
-  const sendMessage = useSendMessage();
+  const callTool = useCallTool();
+  const openExternal = useOpenExternal();
   const toolOutput = useToolOutput<{ products?: Product[] }>();
   const products = Array.isArray(toolOutput?.products)
     ? toolOutput.products
@@ -28,20 +30,26 @@ export default function ProductsPage() {
       return;
     }
 
-    const message =
-      selectedIds.length === 1
-        ? `call the buy product tool with priceId: ${selectedIds[0]}`
-        : `call the buy product tool for these priceIds: ${selectedIds.join(
-            ", "
-          )}`;
+    try {
+      const result = await callTool("buy-products", {
+        priceIds: selectedIds,
+      });
 
-    await sendMessage(message);
+      const checkoutUrl =
+        result?.structuredContent &&
+        (result.structuredContent as { checkoutSessionUrl?: string })
+          .checkoutSessionUrl;
 
-    setStatus(
-      `Sent ${
-        selectedIds.length === 1 ? "product" : "products"
-      } selection to chat.`
-    );
+      if (checkoutUrl) {
+        openExternal(checkoutUrl);
+        setStatus("Opening checkout...");
+      } else {
+        setStatus("No checkout URL returned. Please try again.");
+      }
+    } catch (error) {
+      console.error("Failed to start checkout", error);
+      setStatus("Failed to start checkout. Please try again.");
+    }
   };
 
   return (

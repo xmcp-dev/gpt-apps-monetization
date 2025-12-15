@@ -25,7 +25,7 @@ export type OpenAIGlobals<
   setWidgetState: (state: WidgetState) => Promise<void>;
 };
 
-type API = {
+export type API = {
   callTool: CallTool;
   sendFollowUpMessage: (args: { prompt: string }) => Promise<void>;
   openExternal(payload: { href: string }): void;
@@ -35,6 +35,8 @@ type API = {
   requestModal: RequestModal;
   notifyIntrinsicHeight(height: number): void;
 };
+
+export type OpenAIContextValue = API & OpenAIGlobals;
 
 export type UnknownObject = Record<string, unknown>;
 

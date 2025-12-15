@@ -1,3 +1,4 @@
+import { getProducts } from "@/lib/stripe";
 import { getAppsSdkCompatibleHtml } from "@/lib/utils";
 import { ToolMetadata } from "xmcp";
 
@@ -16,5 +17,15 @@ export const metadata: ToolMetadata = {
 };
 
 export default async function handler() {
-  return await getAppsSdkCompatibleHtml("/products");
+  return {
+    content: [
+      {
+        type: "text",
+        text: await getAppsSdkCompatibleHtml("/products"),
+      },
+    ],
+    structuredContent: {
+      products: await getProducts(),
+    },
+  };
 }

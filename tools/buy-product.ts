@@ -20,20 +20,33 @@ export const metadata: ToolMetadata = {
 };
 
 export default async function handler({ priceId }: InferSchema<typeof schema>) {
-  const session = await getCheckoutSession(priceId);
+  try {
+    const session = await getCheckoutSession(priceId);
 
-  console.log(session);
+    console.log(session);
 
-  return {
-    content: [
-      {
-        type: "text",
-        text: `[Complete your purchase here](${session.url})`,
+    return {
+      content: [
+        {
+          type: "text",
+          text: `[Complete your purchase here](${session.url})`,
+        },
+      ],
+      structuredContent: {
+        checkoutSessionId: session.id,
+        checkoutSessionUrl: session.url,
       },
-    ],
-    structuredContent: {
-      checkoutSessionId: session.id,
-      checkoutSessionUrl: session.url,
-    },
-  };
+    };
+  } catch (error) {
+    console.error("Failed to create checkout session", error);
+    return {
+      content: [
+        {
+          type: "text",
+          text: "Unable to start checkout right now. Please try again.",
+        },
+      ],
+      structuredContent: null,
+    };
+  }
 }

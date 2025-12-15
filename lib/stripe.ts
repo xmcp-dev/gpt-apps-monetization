@@ -13,22 +13,6 @@ export async function getCheckoutSession(priceId: string) {
   return session;
 }
 
-export async function getCheckoutSessionForProducts(priceIds: string[]) {
-  const uniquePriceIds = Array.from(new Set(priceIds));
-
-  const session = await stripe.checkout.sessions.create({
-    mode: "payment",
-    line_items: uniquePriceIds.map((priceId) => ({
-      price: priceId,
-      quantity: 1,
-    })),
-    success_url: "https://example.com/checkout/success",
-    cancel_url: "https://example.com/checkout/cancel",
-  });
-
-  return session;
-}
-
 export type FormattedProduct = {
   id: string;
   priceId: string;

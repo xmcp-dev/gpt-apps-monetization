@@ -12,7 +12,7 @@ export async function getCheckoutSession(priceId: string) {
   return session;
 }
 
-type FormattedProduct = {
+export type FormattedProduct = {
   id: string;
   priceId: string;
   image: string | null;

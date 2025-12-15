@@ -13,7 +13,7 @@
     "react": "19.2.1",
     "react-dom": "19.2.1",
     "stripe": "^20.0.0",
-    "xmcp": "^0.5.4",
+    "xmcp": "file:../xmcp/packages/xmcp",
     "zod": "^3.25.76"
   },
   "devDependencies": {

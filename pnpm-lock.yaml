@@ -21,8 +21,8 @@ importers:
         specifier: ^20.0.0
         version: 20.0.0(@types/node@20.19.27)
       xmcp:
-        specifier: ^0.5.4
-        version: 0.5.4(@swc/helpers@0.5.15)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(zod@3.25.76)
+        specifier: file:../xmcp/packages/xmcp
+        version: file:../xmcp/packages/xmcp(@swc/helpers@0.5.15)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(zod@3.25.76)
       zod:
         specifier: ^3.25.76
         version: 3.25.76
@@ -2317,8 +2317,8 @@ packages:
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
-  xmcp@0.5.4:
-    resolution: {integrity: sha512-rAL7AocDQkNfQvN35EGqCMbW1QUpHUCAiBiGpEDuNjCBmkVcmCqoI391D8pFsYpAVlmBDN2IGRM7haR/wDXF6w==}
+  xmcp@file:../xmcp/packages/xmcp:
+    resolution: {directory: ../xmcp/packages/xmcp, type: directory}
     hasBin: true
     peerDependencies:
       react: '>=19.0.0'
@@ -4897,7 +4897,7 @@ snapshots:
 
   wrappy@1.0.2: {}
 
-  xmcp@0.5.4(@swc/helpers@0.5.15)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(zod@3.25.76):
+  xmcp@file:../xmcp/packages/xmcp(@swc/helpers@0.5.15)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(zod@3.25.76):
     dependencies:
       '@modelcontextprotocol/sdk': 1.24.3(zod@3.25.76)
       '@rspack/core': 1.6.7(@swc/helpers@0.5.15)

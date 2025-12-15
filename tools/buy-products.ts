@@ -4,7 +4,7 @@ import { z } from "zod";
 import { ToolMetadata } from "xmcp";
 
 export const schema = {
-  priceIds: z.array(z.string()).describe("The IDs of the products to buy"),
+  priceId: z.string().describe("The ID of the product to buy"),
 };
 
 export const metadata: ToolMetadata = {
@@ -13,10 +13,8 @@ export const metadata: ToolMetadata = {
     "Create a checkout page link for purchasing the selected products",
 };
 
-export default async function handler({
-  priceIds,
-}: InferSchema<typeof schema>) {
-  const session = await getCheckoutSession(priceIds);
+export default async function handler({ priceId }: InferSchema<typeof schema>) {
+  const session = await getCheckoutSession(priceId);
 
   return {
     content: [

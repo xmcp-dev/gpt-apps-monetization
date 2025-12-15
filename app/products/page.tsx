@@ -1,44 +1,30 @@
-"use client";
+import { getCheckoutSession, getProducts } from "@/lib/stripe";
+import Image from "next/image";
 
-import { FormEvent, useState } from "react";
-import { useToolOutput } from "../../hooks/use-tool-output";
+export default async function ProductsPage() {
+  const products = await getProducts();
 
-type Product = {
-  name: string;
-  priceId: string;
-};
+  const handleSubmit = async (formData: FormData) => {
+    "use server";
 
-export default function ProductsPage() {
-  const toolOutput = useToolOutput<{ products?: Product[] }>();
-  const products = Array.isArray(toolOutput?.products)
-    ? toolOutput.products
-    : [];
-  const [status, setStatus] = useState<string | null>(null);
+    const priceId = formData.get("priceId") as string;
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const selectedIds = formData.getAll("cart[]").map(String);
-
-    if (!selectedIds.length) {
-      setStatus("Select at least one product to continue.");
+    if (!priceId) {
       return;
     }
 
-    setStatus(
-      `Selected ${selectedIds.length} product${
-        selectedIds.length > 1 ? "s" : ""
-      }. Hook up checkout logic to complete the purchase.`
-    );
+    const session = await getCheckoutSession(priceId);
+
+    console.log(session);
   };
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 p-6">
       <header className="space-y-2">
-        <h1 className="text-2xl font-semibold">Select products to purchase</h1>
+        <h1 className="text-2xl font-semibold">Select product to purchase</h1>
       </header>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form action={handleSubmit} className="space-y-4">
         <div className="space-y-3">
           {products.length ? (
             products.map((product) => (
@@ -47,18 +33,30 @@ export default function ProductsPage() {
                 className="flex items-center gap-3 rounded border border-gray-200 p-3"
               >
                 <input
-                  type="checkbox"
-                  name="cart[]"
+                  type="radio"
+                  name="priceId"
                   value={product.priceId}
                   className="size-4"
                 />
-                <span className="font-medium">{product.name}</span>
+                {product.image && (
+                  <Image
+                    width={40}
+                    height={40}
+                    src={product.image}
+                    alt={product.name}
+                    className="rounded object-cover border"
+                  />
+                )}
+                <div className="flex flex-col gap-1">
+                  <span className="font-medium">{product.name}</span>
+                  <span className="text-sm text-gray-500">
+                    {product.description}
+                  </span>
+                </div>
               </label>
             ))
           ) : (
-            <p className="text-sm text-gray-500">
-              Waiting for products from the tool output…
-            </p>
+            <p className="text-sm text-gray-500">Loading...</p>
           )}
         </div>
 
@@ -69,12 +67,6 @@ export default function ProductsPage() {
         >
           Buy
         </button>
-
-        {status ? (
-          <p className="text-sm text-gray-700" role="status">
-            {status}
-          </p>
-        ) : null}
       </form>
     </main>
   );

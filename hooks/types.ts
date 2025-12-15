@@ -128,7 +128,6 @@ declare global {
   interface Window {
     openai: API & OpenAIGlobals;
     innerBaseUrl: string;
-    Dos?: (element: HTMLElement, config: { url: string }) => void;
   }
 
   interface WindowEventMap {

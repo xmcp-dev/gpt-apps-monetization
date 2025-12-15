@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useToolOutput } from "../../hooks/use-tool-output";
-import { useCallTool } from "../../hooks/use-call-tool";
+import { useSendMessage } from "../../hooks/use-send-message";
 
 type Product = {
   name: string;
@@ -10,7 +10,7 @@ type Product = {
 };
 
 export default function ProductsPage() {
-  const callTool = useCallTool();
+  const sendMessage = useSendMessage();
   const toolOutput = useToolOutput<{ products?: Product[] }>();
   console.log(toolOutput);
   const products = Array.isArray(toolOutput?.products)
@@ -30,16 +30,16 @@ export default function ProductsPage() {
       return;
     }
 
-    const result = await callTool("buy-products", {
-      priceIds: selectedIds,
-    });
-
-    console.log(result);
+    await sendMessage(
+      `Selected product IDs: ${selectedIds.join(
+        ", "
+      )}. Please continue checkout.`
+    );
 
     setStatus(
-      `Selected ${selectedIds.length} product${
+      `Sent ${selectedIds.length} product${
         selectedIds.length > 1 ? "s" : ""
-      }. Hook up checkout logic to complete the purchase.`
+      } to chat.`
     );
   };
 

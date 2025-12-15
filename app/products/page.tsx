@@ -1,6 +1,5 @@
 import Product from "@/components/product";
 import { getProducts } from "@/lib/stripe";
-import Image from "next/image";
 
 export default async function ProductsPage() {
   const products = await getProducts();

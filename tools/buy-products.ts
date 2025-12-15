@@ -1,4 +1,4 @@
-import { CheckoutItem, getCheckoutSessionForProducts } from "@/lib/stripe";
+import { CheckoutItem, getCheckoutSession } from "@/lib/stripe";
 import { ToolMetadata, InferSchema } from "xmcp";
 import { z } from "zod";
 
@@ -32,9 +32,7 @@ export const metadata: ToolMetadata = {
 
 export default async function handler({ items }: InferSchema<typeof schema>) {
   try {
-    const session = await getCheckoutSessionForProducts(
-      items as CheckoutItem[]
-    );
+    const session = await getCheckoutSession(items as CheckoutItem[]);
 
     return {
       content: [

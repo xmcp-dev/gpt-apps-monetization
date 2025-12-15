@@ -2,9 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useToolOutput } from "../../hooks/use-tool-output";
-import { useCallTool } from "../../hooks/use-call-tool";
 import { useSendMessage } from "../../hooks/use-send-message";
-import { CallToolResponse } from "@/hooks/types";
 
 type Product = {
   name: string;
@@ -12,29 +10,13 @@ type Product = {
 };
 
 export default function ProductsPage() {
-  const callTool = useCallTool();
   const sendMessage = useSendMessage();
   const toolOutput = useToolOutput<{ products?: Product[] }>();
-  console.log(toolOutput);
   const products = Array.isArray(toolOutput?.products)
     ? toolOutput.products
     : [];
 
-  console.log(products);
   const [status, setStatus] = useState<string | null>(null);
-
-  const handleSendCheckoutResponse = async (result: CallToolResponse) => {
-    try {
-      await sendMessage(
-        "Return this checkout URL to the user: " +
-          JSON.stringify(result?.structuredContent ?? null)
-      );
-      setStatus("Checkout URL sent to the user.");
-    } catch (error) {
-      console.error("Failed to send checkout response", error);
-      setStatus("Failed to send checkout response.");
-    }
-  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -46,18 +28,20 @@ export default function ProductsPage() {
       return;
     }
 
-    const result = await callTool("buy-products", {
-      priceIds: selectedIds,
-    });
+    const message =
+      selectedIds.length === 1
+        ? `call the buy product tool with priceId: ${selectedIds[0]}`
+        : `call the buy product tool for these priceIds: ${selectedIds.join(
+            ", "
+          )}`;
 
-    console.log(result);
+    await sendMessage(message);
 
-    if (!result) {
-      return;
-    }
-
-    // Send structured content back to chat for visibility
-    await handleSendCheckoutResponse(result);
+    setStatus(
+      `Sent ${
+        selectedIds.length === 1 ? "product" : "products"
+      } selection to chat.`
+    );
   };
 
   return (

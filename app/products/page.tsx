@@ -25,6 +25,7 @@ export default function ProductsPage() {
 
   const [status, setStatus] = useState<string | null>(null);
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
   const canCheckout = useMemo(
@@ -42,6 +43,8 @@ export default function ProductsPage() {
       setStatus("Set a quantity for at least one product to continue.");
       return;
     }
+
+    setIsSubmitting(true);
 
     try {
       const result = await callTool("buy-products", {
@@ -62,6 +65,8 @@ export default function ProductsPage() {
     } catch (error) {
       console.error("Failed to start checkout", error);
       setStatus("Failed to start checkout. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -87,22 +92,21 @@ export default function ProductsPage() {
         )}
 
         <button
-          type="submit"
+          type={checkoutUrl ? "button" : "submit"}
           className="inline-flex w-full items-center justify-center rounded bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-black/90 disabled:opacity-60"
-          disabled={!products.length || !canCheckout}
+          disabled={
+            isSubmitting || (!checkoutUrl && (!products.length || !canCheckout))
+          }
+          onClick={() =>
+            !isSubmitting && checkoutUrl && openExternal(checkoutUrl)
+          }
         >
-          Buy
+          {isSubmitting
+            ? "Processing…"
+            : checkoutUrl
+            ? "Open checkout"
+            : "Proceed to checkout"}
         </button>
-
-        {checkoutUrl ? (
-          <button
-            type="button"
-            onClick={() => checkoutUrl && openExternal(checkoutUrl)}
-            className="inline-flex w-full items-center justify-center rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-900 transition hover:bg-gray-50"
-          >
-            Open checkout
-          </button>
-        ) : null}
 
         {status ? (
           <p className="text-sm text-gray-700" role="status">

@@ -19,6 +19,7 @@ export default function ProductsPage() {
     : [];
 
   const [status, setStatus] = useState<string | null>(null);
+  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -41,8 +42,8 @@ export default function ProductsPage() {
           .checkoutSessionUrl;
 
       if (checkoutUrl) {
-        openExternal(checkoutUrl);
-        setStatus("Opening checkout...");
+        setCheckoutUrl(checkoutUrl);
+        setStatus("Checkout ready. Click the button below to continue.");
       } else {
         setStatus("No checkout URL returned. Please try again.");
       }
@@ -89,6 +90,16 @@ export default function ProductsPage() {
         >
           Buy
         </button>
+
+        {checkoutUrl ? (
+          <button
+            type="button"
+            onClick={() => checkoutUrl && openExternal(checkoutUrl)}
+            className="inline-flex w-full items-center justify-center rounded border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-900 transition hover:bg-gray-50"
+          >
+            Open checkout
+          </button>
+        ) : null}
 
         {status ? (
           <p className="text-sm text-gray-700" role="status">

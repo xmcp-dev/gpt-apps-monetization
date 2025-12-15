@@ -57,7 +57,8 @@ export default async function handler({ items }: InferSchema<typeof schema>) {
           text: "Unable to start checkout right now. Please try again.",
         },
       ],
-      structuredContent: null,
+      // structuredContent must always be a plain object for MCP; return an empty object on error.
+      structuredContent: {},
     };
   }
 }

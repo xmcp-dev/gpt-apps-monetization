@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { useToolOutput } from "../../hooks/use-tool-output";
+import { useCallTool } from "../../hooks/use-call-tool";
 
 type Product = {
   name: string;
@@ -9,6 +10,7 @@ type Product = {
 };
 
 export default function ProductsPage() {
+  const callTool = useCallTool();
   const toolOutput = useToolOutput<{ products?: Product[] }>();
   console.log(toolOutput);
   const products = Array.isArray(toolOutput?.products)
@@ -18,7 +20,7 @@ export default function ProductsPage() {
   console.log(products);
   const [status, setStatus] = useState<string | null>(null);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const selectedIds = formData.getAll("cart[]").map(String);
@@ -27,6 +29,12 @@ export default function ProductsPage() {
       setStatus("Select at least one product to continue.");
       return;
     }
+
+    const result = await callTool("buy-products", {
+      priceIds: selectedIds,
+    });
+
+    console.log(result);
 
     setStatus(
       `Selected ${selectedIds.length} product${

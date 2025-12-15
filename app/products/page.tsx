@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { useToolOutput } from "../../hooks/use-tool-output";
 import { useCallTool } from "../../hooks/use-call-tool";
 import { useSendMessage } from "../../hooks/use-send-message";
+import { CallToolResponse } from "@/hooks/types";
 
 type Product = {
   name: string;
@@ -22,6 +23,19 @@ export default function ProductsPage() {
   console.log(products);
   const [status, setStatus] = useState<string | null>(null);
 
+  const handleSendCheckoutResponse = async (result: CallToolResponse) => {
+    try {
+      await sendMessage(
+        "Return this checkout URL to the user: " +
+          JSON.stringify(result?.structuredContent ?? null)
+      );
+      setStatus("Checkout URL sent to the user.");
+    } catch (error) {
+      console.error("Failed to send checkout response", error);
+      setStatus("Failed to send checkout response.");
+    }
+  };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -38,16 +52,12 @@ export default function ProductsPage() {
 
     console.log(result);
 
-    // Send structured content back to chat for visibility
-    await sendMessage(
-      `Checkout response: ${JSON.stringify(result?.structuredContent ?? null)}`
-    );
+    if (!result) {
+      return;
+    }
 
-    setStatus(
-      `Selected ${selectedIds.length} product${
-        selectedIds.length > 1 ? "s" : ""
-      }. Hook up checkout logic to complete the purchase.`
-    );
+    // Send structured content back to chat for visibility
+    await handleSendCheckoutResponse(result);
   };
 
   return (

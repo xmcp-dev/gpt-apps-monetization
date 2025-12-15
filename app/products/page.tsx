@@ -85,7 +85,7 @@ export default function ProductsPage() {
               setQuantities((prev) => ({ ...prev, [priceId]: quantity }))
             }
           />
-        ) : (
+        ) : checkoutUrl ? null : (
           <p className="text-sm text-gray-500">
             Waiting for products from the tool output…
           </p>

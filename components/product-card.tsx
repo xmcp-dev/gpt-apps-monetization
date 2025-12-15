@@ -28,6 +28,10 @@ export function ProductCard({
     onQuantityChange(product.priceId, nextQuantity);
   };
 
+  const increment = () => onQuantityChange(product.priceId, quantity + 1);
+  const decrement = () =>
+    onQuantityChange(product.priceId, Math.max(0, quantity - 1));
+
   return (
     <div className="flex flex-col gap-4 rounded border border-gray-200 p-4 sm:flex-row sm:items-center sm:gap-5">
       <div className="aspect-video w-full max-w-48 overflow-hidden rounded bg-gray-50 sm:max-w-40">
@@ -52,7 +56,15 @@ export function ProductCard({
         <div className="flex items-center gap-3">
           <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
             <span>Quantity</span>
-            <div className="inline-flex items-center rounded border border-gray-300 bg-white px-2 py-1 shadow-sm">
+            <div className="inline-flex items-stretch overflow-hidden rounded border border-gray-300 bg-white shadow-sm">
+              <button
+                type="button"
+                aria-label="Decrease quantity"
+                onClick={decrement}
+                className="px-2 text-base text-gray-700 transition hover:bg-gray-100"
+              >
+                −
+              </button>
               <input
                 type="number"
                 name={`quantity-${product.priceId}`}
@@ -60,8 +72,16 @@ export function ProductCard({
                 step={1}
                 value={quantity}
                 onChange={handleChange}
-                className="w-20 border-none bg-transparent text-right text-sm outline-none"
+                className="w-20 border-x border-gray-200 bg-transparent text-right text-sm outline-none"
               />
+              <button
+                type="button"
+                aria-label="Increase quantity"
+                onClick={increment}
+                className="px-2 text-base text-gray-700 transition hover:bg-gray-100"
+              >
+                +
+              </button>
             </div>
           </label>
         </div>

@@ -1,3 +1,4 @@
+import { CopyMcpUrlButton } from "@/components/copy-mcp-url-button";
 import { Icons } from "@/components/icons";
 import Link from "next/link";
 
@@ -62,7 +63,24 @@ export default function Home() {
           integration.
         </p>
         <p className="text-lg text-neutral-300">
-          This application calls our MCP server tools using the OpenAI SDK
+          This MCP server exposes the following tools:
+        </p>
+        <ul className="list-disc space-y-2 pl-6 text-neutral-300">
+          <li>
+            <code className="rounded bg-neutral-800 px-1.5 py-0.5 text-sm text-white">
+              list-products
+            </code>{" "}
+            — retrieves available products from Stripe
+          </li>
+          <li>
+            <code className="rounded bg-neutral-800 px-1.5 py-0.5 text-sm text-white">
+              buy-products
+            </code>{" "}
+            — creates a checkout session for purchasing
+          </li>
+        </ul>
+        <p className="text-lg text-neutral-300">
+          The application integrates with these tools using the OpenAI SDK
           hooks:
         </p>
         <ul className="list-disc space-y-2 pl-6 text-neutral-300">
@@ -70,44 +88,41 @@ export default function Home() {
             <code className="rounded bg-neutral-800 px-1.5 py-0.5 text-sm text-white">
               useCallTool
             </code>{" "}
-            to invoke the{" "}
-            <code className="rounded bg-neutral-800 px-1.5 py-0.5 text-sm text-white">
-              buy-products
-            </code>{" "}
-            tool
+            — to invoke the MCP tools
           </li>
           <li>
             <code className="rounded bg-neutral-800 px-1.5 py-0.5 text-sm text-white">
               useToolOutput
             </code>{" "}
-            to access the products
+            — to access tool results
           </li>
           <li>
             <code className="rounded bg-neutral-800 px-1.5 py-0.5 text-sm text-white">
               useOpenExternal
             </code>{" "}
-            to open the checkout page in a new tab
+            — to open the checkout page in a new tab
           </li>
         </ul>
         <div className="flex flex-wrap items-center gap-3 pt-4">
           <Link
             href={vercelDeployUrl}
-            className="inline-flex items-center justify-center gap-2 rounded bg-white pr-4 pl-3 py-2 text-sm font-medium text-black transition hover:bg-neutral-200"
+            className="inline-flex h-9 items-center justify-center gap-2 rounded bg-white pr-4 pl-3 py-2 text-sm font-medium text-black transition hover:bg-neutral-200"
           >
             <Icons.vercel /> Deploy to Vercel
           </Link>
           <Link
             href={repoUrl}
-            className="inline-flex items-center justify-center gap-2 rounded border border-neutral-700 bg-neutral-800 pr-4 pl-3 py-2 text-sm font-medium text-white transition hover:bg-neutral-700"
+            className="inline-flex h-9 items-center justify-center gap-2 rounded border border-neutral-700 bg-neutral-800 pr-4 pl-3 py-2 text-sm font-medium text-white transition hover:bg-neutral-700"
           >
             <Icons.github /> Repository
           </Link>
           <Link
             href="https://xmcp.dev/blog/apps-monetization"
-            className="inline-flex items-center justify-center rounded border border-neutral-700 bg-neutral-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-neutral-700"
+            className="inline-flex h-9 items-center justify-center rounded border border-neutral-700 bg-neutral-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-neutral-700"
           >
             Read the full guide
           </Link>
+          <CopyMcpUrlButton />
         </div>
       </section>
     </main>

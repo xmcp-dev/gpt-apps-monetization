@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Monetize your GPT apps with Stripe
+
+Allow users to buy products directly from ChatGPT through Stripe's external checkout integration.
+
+Find the complete guide on [xmcp.dev/blog/apps-monetization](https://xmcp.dev/blog/apps-monetization).
+
+This project was bootstrapped with `create-next-app` and `init-xmcp`.
+
+## Project Structure
+
+```
+gpt-apps-monetization/
+├── app/
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── success/page.tsx
+│   ├── cancel/page.tsx
+│   ├── mcp/route.ts          # MCP endpoint
+│   └── products/page.tsx     # Products widget
+├── hooks/
+│   ├── use-call-tool.ts      # Hook to invoke MCP tools
+│   ├── use-tool-output.ts    # Hook to access tool output
+│   └── use-open-external.ts  # Hook to open external links
+├── lib/
+│   ├── stripe.ts             # Stripe integration
+│   └── utils.ts
+├── tools/
+│   ├── buy-products.ts       # Buy products tool
+│   └── list-products.ts      # List products tool
+└── xmcp.config.ts
+```
 
 ## Getting Started
 
-First, run the development server:
+1. Clone and install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/xmcp-dev/gpt-apps-monetization
+cd gpt-apps-monetization
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Set up Stripe:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+   - Create a [Stripe](https://stripe.com) account and enable sandbox mode
+   - Copy your secret key (`sk_test_…`)
+   - Create some one-off products
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+3. Configure environment variables:
 
-## Learn More
+```bash
+cp .env.example .env
+# Add your STRIPE_SECRET_KEY
+```
 
-To learn more about Next.js, take a look at the following resources:
+4. Run the development server:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+pnpm dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deploy to Vercel
 
-## Deploy on Vercel
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/xmcp-dev/gpt-apps-monetization)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Testing with ChatGPT
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Deploy your app and get the MCP endpoint URL (`https://your-app.vercel.app/mcp`)
+2. In ChatGPT, go to **Apps & Connectors** → **Advanced Settings** and enable developer mode
+3. Create a new connector with your MCP server URL (no authentication required)
+4. Start a new chat and use `/` to access your connector
